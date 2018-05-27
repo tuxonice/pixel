@@ -34,10 +34,10 @@ class IndexController extends Controller
     {
 
         if(!in_array($category,$this->validCategories)){
-            return 'invalid category';
+            return Image::make(public_path('media').'/invalid-category.png')->response();
         }
 
-        $storagePath = storage_path('media/' . $category);
+        $storagePath = public_path('media/' . $category);
         $imageList = array_diff(scandir($storagePath), array('.', '..'));
 		$key = array_rand($imageList, 1);
 		$imagePath = $storagePath.'/'.$imageList[$key];
