@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-$router->group(['prefix' => 'api'], function () use ($router) {
-    $router->get('v1/{category}', 'IndexController@index');
+Route::prefix('api')->group(function () {
+    Route::get('v1/{category?}', 'IndexController@index');
 });
+
+Route::get('json/{category?}', 'IndexController@json');

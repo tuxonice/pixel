@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Intervention\Image\Facades\Image;
+use Illuminate\Http\Request;
 
 class IndexController extends Controller
 {
@@ -21,7 +22,7 @@ class IndexController extends Controller
         "industry",
         "music",
         "nature",
-        "people",
+		"people", 
         "places",
         "religion",
         "science",
@@ -30,18 +31,41 @@ class IndexController extends Controller
         "travel"
     ];
 
-    public function index($category)
+    public function index($category = null)
     {
+
+		if(is_null($category)) {
+			$category = $this->validCategories[array_rand($this->validCategories, 1)];
+		}
 
         if(!in_array($category,$this->validCategories)){
             return Image::make(public_path('media').'/invalid-category.png')->response();
         }
 
-        $storagePath = public_path('media/' . $category);
-        $imageList = array_diff(scandir($storagePath), array('.', '..'));
+        $mediaPath = public_path('media/' . $category);
+        $imageList = array_diff(scandir($mediaPath), array('.', '..'));
 		$key = array_rand($imageList, 1);
-		$imagePath = $storagePath.'/'.$imageList[$key];
+		$imagePath = $mediaPath.'/'.$imageList[$key];
 		
 		return Image::make($imagePath)->response();
     }
+    
+    
+    public function json(Request $request, $category = null)
+    {
+		$httpHost = $request->getSchemeAndHttpHost();
+		
+		if (!in_array($category, $this->validCategories)){
+			return response()->json(['validCategories' => $this->validCategories, 'usage' => $httpHost.'/json/travel']);
+		}
+
+		$mediaPath = public_path('media/' . $category);
+        $imageList = array_diff(scandir($mediaPath), array('.', '..'));
+        
+		foreach($imageList as $key=>$image){
+			$imageList[$key] = $httpHost.'/media/'.$category.'/'.$imageList[$key];
+		}
+
+		return response()->json($imageList);
+	}
 }
