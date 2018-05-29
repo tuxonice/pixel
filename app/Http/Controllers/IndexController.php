@@ -22,7 +22,7 @@ class IndexController extends Controller
         "industry",
         "music",
         "nature",
-		"people", 
+        "people",
         "places",
         "religion",
         "science",
@@ -31,41 +31,53 @@ class IndexController extends Controller
         "travel"
     ];
 
+    /**
+     * @param null $category
+     * @return mixed
+     */
     public function index($category = null)
     {
 
-		if(is_null($category)) {
-			$category = $this->validCategories[array_rand($this->validCategories, 1)];
-		}
+        if (is_null($category)) {
+            $category = $this->validCategories[array_rand($this->validCategories, 1)];
+        }
 
-        if(!in_array($category,$this->validCategories)){
-            return Image::make(public_path('media').'/invalid-category.png')->response();
+        if (!in_array($category, $this->validCategories)) {
+            return Image::make(public_path('media') . '/invalid-category.png')->response();
         }
 
         $mediaPath = public_path('media/' . $category);
         $imageList = array_diff(scandir($mediaPath), array('.', '..'));
-		$key = array_rand($imageList, 1);
-		$imagePath = $mediaPath.'/'.$imageList[$key];
-		
-		return Image::make($imagePath)->response();
+        $key = array_rand($imageList, 1);
+        $imagePath = $mediaPath . '/' . $imageList[$key];
+
+        return Image::make($imagePath)->response();
     }
-    
-    
+
+
+    /**
+     * @param Request $request
+     * @param null $category
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function json(Request $request, $category = null)
     {
-		$httpHost = $request->getSchemeAndHttpHost();
-		
-		if (!in_array($category, $this->validCategories)){
-			return response()->json(['validCategories' => $this->validCategories, 'usage' => $httpHost.'/json/travel']);
-		}
+        $httpHost = $request->getSchemeAndHttpHost();
 
-		$mediaPath = public_path('media/' . $category);
+        if (!in_array($category, $this->validCategories)) {
+            return response()->json([
+                'validCategories' => $this->validCategories,
+                'usage' => $httpHost . '/json/travel'
+            ]);
+        }
+
+        $mediaPath = public_path('media/' . $category);
         $imageList = array_diff(scandir($mediaPath), array('.', '..'));
-        
-		foreach($imageList as $key=>$image){
-			$imageList[$key] = $httpHost.'/media/'.$category.'/'.$imageList[$key];
-		}
 
-		return response()->json($imageList);
-	}
+        foreach ($imageList as $key => $image) {
+            $imageList[$key] = $httpHost . '/media/' . $category . '/' . $imageList[$key];
+        }
+
+        return response()->json($imageList);
+    }
 }
