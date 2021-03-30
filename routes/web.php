@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\HomeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,12 +14,10 @@ use App\Http\Controllers\IndexController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [HomeController::class, 'index']);  
+Route::group(['middleware' => 'throttle:60,1'], function () {
+    Route::prefix('api')->group(function () {
+        Route::get('v1/{category?}', [IndexController::class, 'index']);
+    });
+    Route::get('json/{category?}', [IndexController::class, 'json']);
 });
-
-Route::prefix('api')->group(function () {
-    Route::get('v1/{category?}', [IndexController::class, 'index']);
-});
-
-Route::get('json/{category?}', [IndexController::class, 'json']);
