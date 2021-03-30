@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\IndexController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,7 +18,7 @@ Route::get('/', function () {
 });
 
 Route::prefix('api')->group(function () {
-    Route::get('v1/{category?}', 'IndexController@index');
+    Route::get('v1/{category?}', [IndexController::class, 'index']);
 });
 
-Route::get('json/{category?}', 'IndexController@json');
+Route::get('json/{category?}', [IndexController::class, 'json']);
