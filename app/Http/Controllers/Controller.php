@@ -10,4 +10,13 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    protected function findValidCategories(): array
+    {
+        $mediaFolder = public_path('media');
+        return array_filter(scandir($mediaFolder), function($folder) use($mediaFolder) {
+            $fullPath = $mediaFolder . DIRECTORY_SEPARATOR . $folder;
+            return !in_array($folder, ['.', '..']) && is_dir($fullPath);
+        });
+    }
 }
