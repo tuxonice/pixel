@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class IndexController extends Controller
      * @param string|null $category
      * @return mixed
      */
-    public function index($category = null)
+    public function index(?string $category = null)
     {
 
         $validCategories = $this->findValidCategories();
@@ -41,7 +42,7 @@ class IndexController extends Controller
      * @param string|null $category
      * @return \Illuminate\Http\JsonResponse
      */
-    public function json(Request $request, $category = null)
+    public function json(Request $request, ?string $category = null): JsonResponse
     {
         $httpHost = $request->getSchemeAndHttpHost();
         $validCategories = $this->findValidCategories();
@@ -56,7 +57,7 @@ class IndexController extends Controller
         $imageList = array_filter(scandir($mediaPath), function ($file) use($mediaPath) {
             return is_file($mediaPath . DIRECTORY_SEPARATOR . $file);
         });
-        
+
         $imageList = array_map(function ($file) use($category, $httpHost){
             return $httpHost . '/media/' . $category . '/' . $file;
         }, $imageList);
