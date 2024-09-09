@@ -14,8 +14,8 @@ use App\Http\Controllers\HomeController;
 |
 */
 
-Route::get('/', [HomeController::class, 'index']);  
-Route::group(['middleware' => 'throttle:60,1'], function () {
+Route::get('/', [HomeController::class, 'index']);
+Route::group(['middleware' => 'api'], function () {
     Route::prefix('api')->group(function () {
         Route::get('v1/{category?}', [IndexController::class, 'index']);
     });

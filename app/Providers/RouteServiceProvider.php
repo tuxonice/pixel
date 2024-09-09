@@ -54,10 +54,25 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function configureRateLimiting()
+    protected function configureRateLimiting(): void
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+            if($this->canHaveMoreRequests($request)) {
+                return Limit::perMinute(180)->by($request->ip());
+            }
+            return Limit::perMinute(60)->by($request->ip());
         });
+    }
+
+    public function canHaveMoreRequests(Request $request): bool
+    {
+        $bearerToken = $request->headers->get('X-Bearer-Token');
+        $rateLimitApiKey = env('RATE_LIMIT_API_KEY');
+
+        if ($bearerToken !== null && hash_equals($rateLimitApiKey, $bearerToken)) {
+            return true;
+        }
+
+        return false;
     }
 }
