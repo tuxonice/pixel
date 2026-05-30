@@ -74,6 +74,26 @@ class ImageRepository
         return $this->buildImageUrl($category, $file);
     }
 
+    public function getRandomImageFile(string $category): array
+    {
+        $this->assertCategoryExists($category);
+
+        $files = $this->scanCategory($category);
+
+        if (empty($files)) {
+            throw new CategoryNotFoundException($category);
+        }
+
+        $file = $files[array_rand($files)];
+        $ext  = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+        return [
+            'path' => $this->categoryPath($category) . '/' . $file,
+            'mime' => self::MIME_MAP[$ext] ?? 'application/octet-stream',
+            'filename' => $file,
+        ];
+    }
+
     private function scanCategory(string $category): array
     {
         $path = $this->categoryPath($category);

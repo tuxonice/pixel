@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\ImageRepository;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class ImageController
 {
@@ -37,8 +38,12 @@ class ImageController
     public function randomImage(Request $request, array $params = []): Response
     {
         $category = $params['category'];
-        $url      = $this->repository->getRandomImage($category);
+        $image    = $this->repository->getRandomImageFile($category);
 
-        return new RedirectResponse($url, Response::HTTP_FOUND);
+        $response = new BinaryFileResponse($image['path']);
+        $response->headers->set('Content-Type', $image['mime']);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $image['filename']);
+
+        return $response;
     }
 }
