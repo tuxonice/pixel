@@ -1,33 +1,26 @@
 <?php
 
-return [
+declare(strict_types=1);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Third Party Services
-    |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
-    */
+use App\Controller\ImageController;
+use App\Service\ImageRepository;
+use App\Service\RateLimiter;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
-    'mailgun' => [
-        'domain' => env('MAILGUN_DOMAIN'),
-        'secret' => env('MAILGUN_SECRET'),
-        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
-    ],
+return static function (ContainerBuilder $container): void {
+    $container->register(ImageRepository::class, ImageRepository::class)
+        ->addArgument($_ENV['IMAGES_ROOT'])
+        ->addArgument($_ENV['APP_BASE_URL'])
+        ->setPublic(true);
 
-    'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
-    ],
+    $container->register(RateLimiter::class, RateLimiter::class)
+        ->addArgument(dirname(__DIR__) . '/var/rate_limit')
+        ->addArgument((int) ($_ENV['RATE_LIMIT_MAX'] ?? 60))
+        ->addArgument((int) ($_ENV['RATE_LIMIT_WINDOW'] ?? 60))
+        ->setPublic(true);
 
-    'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-    ],
-
-];
+    $container->register(ImageController::class, ImageController::class)
+        ->addArgument(new Reference(ImageRepository::class))
+        ->setPublic(true);
+};
