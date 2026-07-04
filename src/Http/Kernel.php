@@ -70,8 +70,15 @@ class Kernel
                 Response::HTTP_METHOD_NOT_ALLOWED
             );
         } catch (\Throwable $e) {
+            error_log((string) $e);
+
+            $debug = filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL);
+
             return new JsonResponse(
-                ['error' => 'Internal Server Error', 'message' => $e->getMessage()],
+                [
+                    'error'   => 'Internal Server Error',
+                    'message' => $debug ? $e->getMessage() : 'An unexpected error occurred.',
+                ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
