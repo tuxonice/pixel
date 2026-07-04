@@ -1,0 +1,15 @@
+.git
+.github
+.gitignore
+.dockerignore
+.idea
+.env
+.env.local
+var/
+tests/
+phpunit.xml
+.phpunit.result.cache
+phpstan.neon
+phpcs.xml
+README.md
+SECURITY_REVIEW.md

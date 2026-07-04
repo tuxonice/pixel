@@ -84,4 +84,28 @@ class RateLimiterTest extends TestCase
             $this->assertGreaterThan(0, $e->getRetryAfter());
         }
     }
+
+    public function testCleanupStaleFilesRemovesOldFilesOnly(): void
+    {
+        mkdir($this->storageDir, 0755, true);
+
+        $staleFile = $this->storageDir . '/stale.json';
+        $freshFile = $this->storageDir . '/fresh.json';
+
+        file_put_contents($staleFile, '[]');
+        file_put_contents($freshFile, '[]');
+        touch($staleFile, time() - 120);
+        touch($freshFile, time());
+
+        $limiter = new RateLimiter($this->storageDir, 100, 60);
+
+        $reflection = new \ReflectionMethod($limiter, 'cleanupStaleFiles');
+        $reflection->setAccessible(true);
+        $reflection->invoke($limiter);
+
+        $this->assertFileDoesNotExist($staleFile);
+        $this->assertFileExists($freshFile);
+
+        unlink($freshFile);
+    }
 }

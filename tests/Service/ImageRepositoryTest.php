@@ -96,6 +96,30 @@ class ImageRepositoryTest extends TestCase
         $this->assertCount(3, $result['images']);
     }
 
+    public function testGetAllImagesReportsNotTruncatedWhenUnderLimit(): void
+    {
+        $this->makeCategory('cats', ['a.jpg', 'b.jpg']);
+
+        $result = $this->repo->getAllImages('cats');
+
+        $this->assertFalse($result['truncated']);
+    }
+
+    public function testGetAllImagesCapsResultsAndReportsTruncated(): void
+    {
+        $files = [];
+        for ($i = 0; $i < 1005; $i++) {
+            $files[] = "img{$i}.jpg";
+        }
+        $this->makeCategory('cats', $files);
+
+        $result = $this->repo->getAllImages('cats');
+
+        $this->assertSame(1005, $result['total']);
+        $this->assertTrue($result['truncated']);
+        $this->assertCount(1000, $result['images']);
+    }
+
     public function testGetAllImagesThrowsForMissingCategory(): void
     {
         mkdir($this->root, 0755, true);

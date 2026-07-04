@@ -8,6 +8,8 @@ use App\Exception\RateLimitExceededException;
 
 class RateLimiter
 {
+    private const CLEANUP_PROBABILITY = 0.01;
+
     public function __construct(
         private readonly string $storageDir,
         private readonly int $maxRequests,
@@ -19,6 +21,10 @@ class RateLimiter
     {
         if (!is_dir($this->storageDir)) {
             mkdir($this->storageDir, 0755, true);
+        }
+
+        if ((mt_rand() / mt_getrandmax()) < self::CLEANUP_PROBABILITY) {
+            $this->cleanupStaleFiles();
         }
 
         $file = $this->storageDir . '/' . md5($ip) . '.json';
@@ -66,5 +72,22 @@ class RateLimiter
 
         flock($fp, LOCK_UN);
         fclose($fp);
+    }
+
+    private function cleanupStaleFiles(): void
+    {
+        $files = glob($this->storageDir . '/*.json');
+        if ($files === false) {
+            return;
+        }
+
+        $cutoff = time() - $this->windowSeconds;
+
+        foreach ($files as $file) {
+            $mtime = filemtime($file);
+            if ($mtime !== false && $mtime < $cutoff) {
+                @unlink($file);
+            }
+        }
     }
 }

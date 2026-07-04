@@ -26,7 +26,12 @@ APP_DEBUG=false
 IMAGES_ROOT=/var/www/html/images
 RATE_LIMIT_MAX=60
 RATE_LIMIT_WINDOW=60
+TRUSTED_PROXIES=
 ```
+
+`TRUSTED_PROXIES` is a comma-separated list of proxy IPs/CIDR ranges. Leave it empty unless the
+app sits behind an additional reverse proxy or load balancer upstream of Nginx — only then should
+`X-Forwarded-For` be trusted for rate limiting and client IP resolution.
 
 Set `APP_DEBUG=true` only in local development to expose real exception messages in `500`
 responses. Keep it `false` (default) in any shared or production environment.

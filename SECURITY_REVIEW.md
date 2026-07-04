@@ -34,7 +34,7 @@ filesystem paths in `categoryPath()`.
 
 ---
 
-## [ ] 3. Unbounded `getAllImages()` — DoS via large categories (Low)
+## [x] 3. Unbounded `getAllImages()` — DoS via large categories (Low)
 
 **File:** `src/Service/ImageRepository.php` (`getAllImages()`), used by legacy `GET /json/{category}`
 
@@ -47,7 +47,7 @@ response, calling `filesize()` per file.
 
 ---
 
-## [ ] 4. Rate limiter trusts unproxied client IP (Low)
+## [x] 4. Rate limiter trusts unproxied client IP (Low)
 
 **File:** `src/Http/Kernel.php` (`$request->getClientIp()`), `docker/nginx/default.conf`
 
@@ -63,7 +63,7 @@ by everyone) or become spoofable via `X-Forwarded-For` if proxies are later misc
 
 ---
 
-## [ ] 5. No expiry/cleanup of rate-limit state files (Low)
+## [x] 5. No expiry/cleanup of rate-limit state files (Low)
 
 **File:** `src/Service/RateLimiter.php`, `var/rate_limit/`
 
@@ -77,7 +77,7 @@ under sustained scanning/botting).
 
 ---
 
-## [ ] 6. No `.dockerignore` — bloated/leaky image build (Low)
+## [x] 6. No `.dockerignore` — bloated/leaky image build (Low)
 
 **File:** `docker/php/Dockerfile` (`COPY . .`)
 
