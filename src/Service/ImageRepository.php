@@ -188,8 +188,17 @@ class ImageRepository
 
     private function assertCategoryExists(string $category): void
     {
-        if (!$this->categoryExists($category)) {
+        if (!$this->isValidCategoryName($category) || !$this->categoryExists($category)) {
             throw new CategoryNotFoundException($category);
         }
+    }
+
+    private function isValidCategoryName(string $category): bool
+    {
+        if ($category === '' || str_contains($category, '/') || str_contains($category, '\\')) {
+            return false;
+        }
+
+        return !str_contains($category, '..');
     }
 }
