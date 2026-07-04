@@ -7,6 +7,7 @@ namespace App\Http;
 use App\Exception\CategoryNotFoundException;
 use App\Exception\RateLimitExceededException;
 use App\Service\RateLimiter;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,7 +71,9 @@ class Kernel
                 Response::HTTP_METHOD_NOT_ALLOWED
             );
         } catch (\Throwable $e) {
-            error_log((string) $e);
+            $logger = $this->container->get(LoggerInterface::class);
+            assert($logger instanceof LoggerInterface);
+            $logger->error($e->getMessage(), ['exception' => $e]);
 
             $debug = filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL);
 
