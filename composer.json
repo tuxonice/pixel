@@ -4,6 +4,7 @@
     "type": "project",
     "require": {
         "php": "^8.4",
+        "monolog/monolog": "^3.0",
         "symfony/config": "^7.0",
         "symfony/dependency-injection": "^7.0",
         "symfony/dotenv": "^7.0",

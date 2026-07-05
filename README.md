@@ -36,6 +36,10 @@ app sits behind an additional reverse proxy or load balancer upstream of Nginx �
 Set `APP_DEBUG=true` only in local development to expose real exception messages in `500`
 responses. Keep it `false` (default) in any shared or production environment.
 
+Set `APP_DEBUG=true` only in local development to expose real exception messages in `500`
+responses. Keep it `false` (default) in any shared or production environment — the full
+exception is always logged regardless of this flag (see [Logging](#logging)).
+
 ### 2. Add images
 
 Place images inside the `images/` directory, one subfolder per category:
@@ -170,6 +174,13 @@ Streams a random image from the given category (binary response, correct `Conten
 | `429` | Rate limit exceeded — check the `Retry-After` header |
 | `500` | Internal server error |
 
+## Logging
+
+Uncaught exceptions are logged via [Monolog](https://github.com/Seldaek/monolog) to a
+daily-rotating file at `var/log/app-YYYY-MM-DD.log` (14 days retention). This happens
+regardless of `APP_DEBUG` — the flag only controls what's exposed in the HTTP response, not
+what's recorded server-side.
+
 ## Rate Limiting
 
 IP-based sliding window rate limiter — no database. State is stored in `var/rate_limit/`.
@@ -229,6 +240,7 @@ pixel/
 - **Nginx** — static file serving + PHP proxy
 - **Symfony Components** — `http-foundation`, `routing`, `http-kernel`, `dependency-injection`, `config`, `dotenv`
 - **Twig 3** — HTML template rendering
+- **Monolog 3** — daily-rotating file logging
 - **PHPUnit 11** — unit tests
 - **PHPStan** — static analysis at level 8
 - **PHP CodeSniffer** — PSR-12 code style

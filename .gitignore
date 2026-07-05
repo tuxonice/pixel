@@ -1,5 +1,6 @@
 vendor/
 var/rate_limit/
+var/log/
 .env.local
 .env
 .idea/

@@ -16,6 +16,6 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader 2>/dev/null || true
 
-RUN mkdir -p /var/www/html/var/rate_limit \
+RUN mkdir -p /var/www/html/var/rate_limit /var/www/html/var/log \
     && chown -R www-data:www-data /var/www/html/var \
     && chmod -R 775 /var/www/html/var
