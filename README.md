@@ -22,10 +22,14 @@ Edit `.env` to match your setup:
 
 ```dotenv
 APP_BASE_URL=http://localhost:8080
+APP_DEBUG=false
 IMAGES_ROOT=/var/www/html/images
 RATE_LIMIT_MAX=60
 RATE_LIMIT_WINDOW=60
 ```
+
+Set `APP_DEBUG=true` only in local development to expose real exception messages in `500`
+responses. Keep it `false` (default) in any shared or production environment.
 
 ### 2. Add images
 
