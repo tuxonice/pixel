@@ -17,6 +17,8 @@ class ImageRepository
         'gif'  => 'image/gif',
     ];
 
+    private const MAX_UNPAGINATED_IMAGES = 1000;
+
     public function __construct(
         private readonly string $imagesRoot,
         private readonly string $baseUrl,
@@ -43,18 +45,21 @@ class ImageRepository
     }
 
     /**
-     * @return array{category: string, total: int, images: list<array<string, mixed>>}
+     * @return array{category: string, total: int, truncated: bool, images: list<array<string, mixed>>}
      */
     public function getAllImages(string $category): array
     {
         $this->assertCategoryExists($category);
 
         $files = $this->scanCategory($category);
+        $total = count($files);
+        $limited = array_slice($files, 0, self::MAX_UNPAGINATED_IMAGES);
 
         return [
-            'category' => $category,
-            'total'    => count($files),
-            'images'   => array_map(fn(string $file) => $this->buildImageEntry($category, $file), $files),
+            'category'  => $category,
+            'total'     => $total,
+            'truncated' => $total > self::MAX_UNPAGINATED_IMAGES,
+            'images'    => array_map(fn(string $file) => $this->buildImageEntry($category, $file), $limited),
         ];
     }
 
@@ -188,8 +193,17 @@ class ImageRepository
 
     private function assertCategoryExists(string $category): void
     {
-        if (!$this->categoryExists($category)) {
+        if (!$this->isValidCategoryName($category) || !$this->categoryExists($category)) {
             throw new CategoryNotFoundException($category);
         }
+    }
+
+    private function isValidCategoryName(string $category): bool
+    {
+        if ($category === '' || str_contains($category, '/') || str_contains($category, '\\')) {
+            return false;
+        }
+
+        return !str_contains($category, '..');
     }
 }

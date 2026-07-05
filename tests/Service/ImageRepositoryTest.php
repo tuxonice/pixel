@@ -96,6 +96,30 @@ class ImageRepositoryTest extends TestCase
         $this->assertCount(3, $result['images']);
     }
 
+    public function testGetAllImagesReportsNotTruncatedWhenUnderLimit(): void
+    {
+        $this->makeCategory('cats', ['a.jpg', 'b.jpg']);
+
+        $result = $this->repo->getAllImages('cats');
+
+        $this->assertFalse($result['truncated']);
+    }
+
+    public function testGetAllImagesCapsResultsAndReportsTruncated(): void
+    {
+        $files = [];
+        for ($i = 0; $i < 1005; $i++) {
+            $files[] = "img{$i}.jpg";
+        }
+        $this->makeCategory('cats', $files);
+
+        $result = $this->repo->getAllImages('cats');
+
+        $this->assertSame(1005, $result['total']);
+        $this->assertTrue($result['truncated']);
+        $this->assertCount(1000, $result['images']);
+    }
+
     public function testGetAllImagesThrowsForMissingCategory(): void
     {
         mkdir($this->root, 0755, true);
@@ -195,6 +219,33 @@ class ImageRepositoryTest extends TestCase
 
         $this->assertSame(1, $result['total']);
         $this->assertSame('photo.jpg', $result['images'][0]['filename']);
+    }
+
+    public function testGetAllImagesRejectsPathTraversalWithDotDot(): void
+    {
+        mkdir($this->root, 0755, true);
+
+        $this->expectException(CategoryNotFoundException::class);
+
+        $this->repo->getAllImages('../etc');
+    }
+
+    public function testGetAllImagesRejectsSlashInCategory(): void
+    {
+        mkdir($this->root, 0755, true);
+
+        $this->expectException(CategoryNotFoundException::class);
+
+        $this->repo->getAllImages('cats/../../etc');
+    }
+
+    public function testGetRandomImageFileRejectsBackslashInCategory(): void
+    {
+        mkdir($this->root, 0755, true);
+
+        $this->expectException(CategoryNotFoundException::class);
+
+        $this->repo->getRandomImageFile('cats\\..\\..');
     }
 
     public function testImageEntryContainsExpectedFields(): void
