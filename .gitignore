@@ -4,3 +4,4 @@ var/log/
 .env.local
 .env
 .idea/
+/.phpunit.result.cache
