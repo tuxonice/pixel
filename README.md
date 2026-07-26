@@ -1,5 +1,9 @@
 # Pixel
 
+[![CI](https://github.com/tuxonice/pixel/actions/workflows/ci.yml/badge.svg)](https://github.com/tuxonice/pixel/actions/workflows/ci.yml)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://www.php.net/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A PHP 8.4 image server built on a custom MVC micro-framework using Symfony components. Serves images stored in a local folder hierarchy — no database required. Categories are derived automatically from folder names.
 
 ## Requirements
@@ -32,9 +36,6 @@ TRUSTED_PROXIES=
 `TRUSTED_PROXIES` is a comma-separated list of proxy IPs/CIDR ranges. Leave it empty unless the
 app sits behind an additional reverse proxy or load balancer upstream of Nginx — only then should
 `X-Forwarded-For` be trusted for rate limiting and client IP resolution.
-
-Set `APP_DEBUG=true` only in local development to expose real exception messages in `500`
-responses. Keep it `false` (default) in any shared or production environment.
 
 Set `APP_DEBUG=true` only in local development to expose real exception messages in `500`
 responses. Keep it `false` (default) in any shared or production environment — the full
@@ -227,7 +228,9 @@ pixel/
 ├── tests/
 │   ├── Exception/
 │   └── Service/
-├── var/rate_limit/         # Rate limit state files (gitignored)
+├── var/
+│   ├── log/               # Application logs (gitignored)
+│   └── rate_limit/        # Rate limit state files (gitignored)
 ├── .env                    # Environment config
 ├── docker-compose.yml
 ├── phpunit.xml

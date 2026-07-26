@@ -55,5 +55,6 @@ return static function (ContainerBuilder $container): void {
 
     $container->register(IndexController::class, IndexController::class)
         ->addArgument(new Reference(Environment::class))
+        ->addArgument(new Reference(ImageRepository::class))
         ->setPublic(true);
 };

@@ -2,6 +2,7 @@
     "name": "tuxonice/pixel",
     "description": "PHP image server — MVC micro-framework on Symfony components",
     "type": "project",
+    "license": "MIT",
     "require": {
         "php": "^8.4",
         "monolog/monolog": "^3.0",
